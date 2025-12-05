@@ -1,0 +1,7 @@
+requests
+dnspython
+pyfiglet
+rich
+selenium
+googlesearch-python
+flask
