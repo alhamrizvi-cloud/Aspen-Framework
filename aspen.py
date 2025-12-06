@@ -2,6 +2,7 @@
 """
 Aspen - Automated Reconnaissance Framework
 Created by Alham Rizvi
+contributor by kaif shaikh
 
 This tool is for ethical reconnaissance only. Use responsibly and with permission.
 """
