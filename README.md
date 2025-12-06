@@ -1,3 +1,4 @@
+<img width="1023" height="752" alt="image" src="https://github.com/user-attachments/assets/a0ba7155-3d8c-42b1-a15e-ab74a282296d" />
 
 # Aspen-Framework
 
