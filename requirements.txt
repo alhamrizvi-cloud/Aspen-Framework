@@ -5,3 +5,5 @@ rich
 selenium
 googlesearch-python
 flask
+scapy
+colorama
