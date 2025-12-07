@@ -94,8 +94,8 @@ class AspenFramework:
                 answers = dns.resolver.resolve(f"{sub}.{domain}", 'A')
                 for rdata in answers:
                     subdomains.add(f"{sub}.{domain}")
-            except:
-                pass
+            except Exception as e:
+                self.log(f"DNS error for {sub}.{domain}: {e}", "warning")
 
         # Wordlist-based
         wordlist = self.args.wordlist or DEFAULT_WORDLIST
@@ -111,31 +111,51 @@ class AspenFramework:
 
         # API fallback (e.g., crt.sh)
         try:
-            response = requests.get(f"https://crt.sh/?q={domain}&output=json", timeout=TIMEOUT)
+            response = requests.get(
+                f"https://crt.sh/?q={domain}&output=json",
+                headers={"User-Agent": "Mozilla/5.0"},
+                timeout=TIMEOUT
+            )
             if response.status_code == 200:
-                data = response.json()
-                for entry in data:
-                    sub = entry['name_value'].lower()
-                    if sub.endswith(f".{domain}"):
-                        subdomains.add(sub)
+                try:
+                    data = response.json()
+                    for entry in data:
+                        sub = entry['name_value'].lower()
+                        if sub.endswith(f".{domain}"):
+                            subdomains.add(sub)
+                except Exception as e:
+                    self.log("crt.sh did not return valid JSON", "warning")
         except:
             self.log("API fallback failed", "warning")
 
         result = "\n".join(sorted(subdomains))
         self.save_results(result, f"subdomains_{domain}.txt")
+        # Print subdomains to console
+        for s in sorted(subdomains):
+            self.console.print(s)
         return subdomains
 
     # 2. Port Scanning
     def scan_ports(self, target):
         """Scan ports with service detection."""
         self.log("Starting port scan...")
+        if os.geteuid() != 0:
+            self.log("Port scanning requires root privileges.", "error")
+            return {}
         open_ports = {}
-        ports = list(range(1, 1025)) if self.args.top_ports else list(range(0, 65536))  # Top 1024 or full
+        if self.args.top_ports:
+            ports = range(1, 1025)
+        elif self.args.full:
+            ports = range(1, 65536)
+        else:
+            ports = range(1, 1025)  # Default to top ports
 
         def scan_port(port):
             try:
                 pkt = IP(dst=target)/TCP(dport=port, flags="S")
                 resp = sr1(pkt, timeout=TIMEOUT, verbose=0)
+                if resp is None:
+                    return
                 if resp and resp.haslayer(TCP) and resp[TCP].flags == 0x12:  # SYN-ACK
                     # Banner grabbing (simple)
                     service = "unknown"
@@ -175,7 +195,11 @@ class AspenFramework:
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
-        driver = webdriver.Chrome(options=options)  # Ensure chromedriver is installed
+        try:
+            driver = webdriver.Chrome(options=options)  # Ensure chromedriver is installed
+        except Exception as e:
+            self.log(f"ChromeDriver error: {e}", "error")
+            return
         try:
             driver.get(url)
             time.sleep(2)  # Wait for load
@@ -193,7 +217,7 @@ class AspenFramework:
         """Detect tech stack."""
         self.log("Fingerprinting technology...")
         try:
-            response = requests.get(url, timeout=TIMEOUT)
+            response = requests.get(url, timeout=TIMEOUT, headers={"User-Agent": "Mozilla/5.0"})
             headers = response.headers
             tech = {
                 "server": headers.get("Server", "unknown"),
@@ -264,7 +288,7 @@ class AspenFramework:
 def main():
     # 3D ASCII Art Banner (simplified; use a tool like figlet for full 3D)
     banner = """
-    █████╗ ███████╗██████╗ ███████╗███╗   ██╗
+     █████╗ ███████╗██████╗ ███████╗███╗   ██╗
     ██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║
     ███████║███████╗██████╔╝█████╗  ██╔██╗ ██║
     ██╔══██║╚════██║██╔═══╝ ██╔══╝  ██║╚██╗██║
@@ -346,3 +370,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
