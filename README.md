@@ -209,11 +209,10 @@ This project is licensed under the MIT License.
 
 ---
 
-## Author
+## Author & Contributors
 
 **Alham Rizvi**
-
-
+Kaif Shaikh, Sonajit Rabha, Raghav Sharma, Nivesh Sharma
 
 
 
