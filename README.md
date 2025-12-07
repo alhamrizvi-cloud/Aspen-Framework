@@ -1,3 +1,5 @@
+
+<img width="1021" height="762" alt="image" src="https://github.com/user-attachments/assets/c3655be8-a54f-422e-ab84-fff3d57efa20" />
 # Aspen-Framework
 
 **Aspen-Framework** is an **Automated Reconnaissance Framework** for ethical security testing.  
