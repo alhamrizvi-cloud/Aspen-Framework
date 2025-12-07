@@ -1,60 +1,60 @@
-<img width="1023" height="752" alt="image" src="https://github.com/user-attachments/assets/a0ba7155-3d8c-42b1-a15e-ab74a282296d" />
-
 # Aspen-Framework
 
-**Aspen-Framework** is an **Automated Reconnaissance Framework** for ethical security testing. It is designed for security researchers and pentesters to perform reconnaissance efficiently.  
+**Aspen-Framework** is an **Automated Reconnaissance Framework** for ethical security testing.  
+It helps security researchers and penetration testers perform reconnaissance quickly and efficiently.
 
-> ⚠️ **Warning:** Use only for authorized security testing. Unauthorized scanning is illegal.
+> ⚠️ Use this tool only for authorized testing. Unauthorized scanning is illegal.
 
 ---
 
 ## Features
 
-- **Subdomain Enumeration**  
-  - DNS brute-force  
-  - CRT.sh integration  
-  - Passive DNS (API required)  
-  - Google dorks  
+- **Subdomain Enumeration**
+  - DNS brute-force
+  - CRT.sh certificate transparency scraping
+  - Passive DNS (optional APIs)
+  - Google dork fallback
 
-- **Port Scanning**  
-  - Top ports or full range  
-  - Service detection  
+- **Port Scanning**
+  - Top ports scan
+  - Full port scan (requires sudo)
+  - Service detection
 
-- **Technology Fingerprinting**  
-  - Detect server type, language, CMS, and security headers  
+- **Technology Fingerprinting**
+  - Detect server type
+  - Detect backend language
+  - CMS detection
+  - Security headers detection
 
-- **Screenshotting**  
-  - Headless browser screenshots  
+- **Screenshotting**
+  - Headless browser screenshots via Selenium
 
-- **Vulnerability Mapping**  
-  - Missing security headers  
-  - Directory listing  
-  - Default server pages  
-  - Outdated servers  
+- **Vulnerability Mapping**
+  - Missing security headers
+  - Directory listing detection
+  - Default server page detection
+  - Basic outdated server identification
 
-- **SSL Certificate Scanning**  
-  - Main domains and subdomains  
-
-- **Full Scan**  
-  - Run all modules together with a single command  
+- **Full Scan**
+  - Execute all modules in one command
 
 ---
 
 ## Installation
 
-### 1. Clone the repository
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/alhamrizvi-cloud/Aspen-Framework.git
 cd Aspen-Framework
-````
+```
 
-### 2. Create and activate a Python virtual environment
+### 2. Create & activate virtual environment
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate       # Linux/macOS
-# venv\Scripts\activate        # Windows
+source venv/bin/activate  # Linux/macOS
+# venv\Scripts\activate   # Windows
 ```
 
 ### 3. Install dependencies
@@ -64,80 +64,96 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Install a browser driver for Selenium
-
-Aspen uses Selenium for screenshots:
+### 4. Install browser driver (required for screenshots)
 
 ```bash
-sudo apt install chromium-driver      # Debian/Ubuntu/Parrot OS
-# or manually download ChromeDriver for your version
+sudo apt install chromium-driver
 ```
+
+Or download ChromeDriver manually for your browser version.
 
 ---
 
 ## Usage
 
-### CLI Mode
-
-Run Aspen from the command line:
-
-```bash
-python3 aspen.py <command> [options]
-```
-
-#### Examples:
-
-* **Subdomain enumeration**
-
-```bash
-python3 aspen.py enum --domain example.com --crt
-```
-
-* **Port scanning (top ports)**
-
-```bash
-python3 aspen.py scan --target example.com --top-ports
-```
-
-* **Technology fingerprinting**
-
-```bash
-python3 aspen.py tech --url http://example.com
-```
-
-* **Take a screenshot**
-
-```bash
-python3 aspen.py screenshot --url http://example.com
-```
-
-* **Vulnerability mapping**
-
-```bash
-python3 aspen.py vulns --url http://example.com
-```
-
-* **SSL scanning**
-
-```bash
-python3 aspen.py ssl --domain example.com
-```
-
-* **Full scan (all modules)**
-
-```bash
-python3 aspen.py fullscan --domain example.com
-```
-
----
-
-### Web Mode
+Run this to see available commands:
 
 ```bash
 python3 aspen.py
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser to access the web interface.
+---
+
+## Commands
+
+### 1. Subdomain Enumeration
+
+```bash
+python3 aspen.py enum --domain example.com --save --wordlist wordlists/subdomains.txt
+```
+
+---
+
+### 2. Port Scan
+
+**Top ports**
+
+```bash
+python3 aspen.py scan --domain example.com --top-ports
+```
+
+**Full port scan (requires sudo)**
+
+```bash
+sudo python3 aspen.py scan --domain example.com --full
+```
+
+---
+
+### 3. Technology Fingerprinting
+
+```bash
+python3 aspen.py tech --domain example.com --save
+```
+
+---
+
+### 4. Screenshot
+
+```bash
+python3 aspen.py screenshot --domain example.com --save
+```
+
+---
+
+### 5. Vulnerability Scan
+
+```bash
+python3 aspen.py vulns --domain example.com --save
+```
+
+---
+
+### 6. Full Automatic Recon (Recommended)
+
+```bash
+python3 aspen.py fullscan --domain example.com --full --save --wordlist wordlists/subdomains.txt
+```
+
+---
+
+## Output Structure
+
+```
+Aspen-Framework/
+ ├── results/
+ │   ├── subdomains_<domain>.txt
+ │   ├── tech_<domain>.json
+ │   ├── vulns_<domain>.txt
+ ├── screenshots/
+ │   ├── <domain>.png
+ ├── logs/
+```
 
 ---
 
@@ -145,43 +161,56 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser to access th
 
 ```
 Aspen-Framework/
-├── aspen.py              # Main CLI entry point
-├── requirements.txt      # Python dependencies
-├── results/              # Scan results
+├── aspen.py
+├── requirements.txt
+├── results/
+├── screenshots/
+├── logs/
+└── wordlists/
+```
 
 ---
 
 ## Notes
 
-* Ensure **ChromeDriver** or **ChromiumDriver** is installed for screenshots.
-* Logs are saved in `logs/aspen.log`.
-* Scan results are saved in `results/`.
-* Optional: Use a custom **wordlist** for subdomain enumeration.
-* Only scan targets you have explicit permission to test.
+- ChromeDriver or ChromiumDriver is required for screenshots.
+- Logs are stored in `logs/aspen.log`.
+- Results are stored in `results/`.
+- You may use any custom subdomain wordlist.
+- Only scan targets you have permission to test.
 
 ---
 
 ## Contributing
 
-Contributions are welcome!
-
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -m 'Add new feature'`
-4. Push to the branch: `git push origin feature-name`
-5. Submit a pull request
+1. Fork this repository  
+2. Create a feature branch:  
+   ```bash
+   git checkout -b feature-branch
+   ```
+3. Commit your changes:  
+   ```bash
+   git commit -m "Add new feature"
+   ```
+4. Push the branch:  
+   ```bash
+   git push origin feature-branch
+   ```
+5. Open a pull request  
 
 ---
 
 ## License
 
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ---
 
 ## Author
 
 **Alham Rizvi**
+
+
 
 
 
